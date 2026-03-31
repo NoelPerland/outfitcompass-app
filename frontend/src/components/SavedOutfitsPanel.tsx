@@ -9,6 +9,7 @@ export function SavedOutfitsPanel({ savedOutfits, onDelete }: SavedOutfitsPanelP
   return (
     <section className="section">
       <div className="section-heading">
+        <span className="eyebrow">Saved</span>
         <h2>Saved</h2>
       </div>
 

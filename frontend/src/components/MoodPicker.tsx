@@ -10,6 +10,7 @@ export function MoodPicker({ selectedMood, onSelect }: MoodPickerProps) {
   return (
     <section className="section">
       <div className="section-heading">
+        <span className="eyebrow">Mood</span>
         <h2>Choose your mood</h2>
       </div>
 
@@ -27,6 +28,11 @@ export function MoodPicker({ selectedMood, onSelect }: MoodPickerProps) {
               {mood.emoji}
             </span>
             <span className="mood-label">{mood.label}</span>
+            {selectedMood === mood.value ? (
+              <span className="mood-check" aria-hidden="true">
+                ✓
+              </span>
+            ) : null}
           </button>
         ))}
       </div>

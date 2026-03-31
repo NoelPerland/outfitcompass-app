@@ -216,6 +216,7 @@ export default function App() {
     <main className="app-shell">
       <header className="hero">
         <div className="hero-copy">
+          <span className="eyebrow">Outfit Compass</span>
           <h1>Pick a mood. Get an outfit.</h1>
           <p>Simple outfit ideas based on mood and weather.</p>
           <button type="button" className="primary-button hero-button" onClick={() => void handleFetchOutfits()}>

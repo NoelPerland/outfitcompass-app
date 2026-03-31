@@ -25,6 +25,7 @@ export function WeatherSection({
   return (
     <section className="section">
       <div className="section-heading">
+        <span className="eyebrow">Weather</span>
         <h2>Weather</h2>
       </div>
 
@@ -34,14 +35,16 @@ export function WeatherSection({
           className={`toggle-chip ${mode === "geo" ? "is-active" : ""}`}
           onClick={() => onModeChange("geo")}
         >
-          📍 Use my location
+          <span aria-hidden="true">📍</span>
+          <span>Use my location</span>
         </button>
         <button
           type="button"
           className={`toggle-chip ${mode === "manual" ? "is-active" : ""}`}
           onClick={() => onModeChange("manual")}
         >
-          ☁ Manual
+          <span aria-hidden="true">☁️</span>
+          <span>Manual</span>
         </button>
       </div>
 

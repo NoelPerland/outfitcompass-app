@@ -56,6 +56,7 @@ export function SuggestionResults({
   return (
     <section className="section">
       <div className="section-heading">
+        <span className="eyebrow">Looks</span>
         <h2>Outfits</h2>
         {weatherSummary ? <p>{weatherSummary.summary}</p> : null}
       </div>
@@ -81,6 +82,24 @@ export function SuggestionResults({
 
             return (
               <article className="result-card" key={suggestion.id}>
+                <div className="result-preview" aria-hidden="true">
+                  <div className="palette-dots" aria-label="Outfit colors">
+                    {suggestion.paletteColors.slice(0, 4).map((color, index) => (
+                      <span
+                        className={`palette-dot palette-dot-${(index % 4) + 1}`}
+                        key={`${suggestion.id}-${color}`}
+                      />
+                    ))}
+                  </div>
+                  <div className="preview-icons">
+                    {suggestion.items.slice(0, 3).map((item) => (
+                      <span className="preview-icon" key={`${suggestion.id}-${item.name}`}>
+                        {getItemIcon(item)}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="result-top">
                   <h3>{suggestion.title}</h3>
                   <button
@@ -92,12 +111,6 @@ export function SuggestionResults({
                   >
                     {isSaved ? "♥" : "♡"}
                   </button>
-                </div>
-
-                <div className="palette-dots" aria-label="Outfit colors">
-                  {suggestion.paletteColors.map((color, index) => (
-                    <span className={`palette-dot palette-dot-${(index % 4) + 1}`} key={`${suggestion.id}-${color}`} />
-                  ))}
                 </div>
 
                 <ul className="item-list simple-list">
