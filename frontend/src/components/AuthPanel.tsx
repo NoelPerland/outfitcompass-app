@@ -27,71 +27,56 @@ export function AuthPanel({
   onSubmit,
   onLogout
 }: AuthPanelProps) {
+  if (user) {
+    return (
+      <div className="account-bar">
+        <span>Signed in as {user.email}</span>
+        <button type="button" className="text-button" onClick={onLogout}>
+          Log out
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <section className="panel section-panel">
-      <div className="section-heading">
-        <h2>{user ? "You are signed in." : "Save your outfits."}</h2>
-        <p>
-          {user ? user.email : "Log in or create an account."}
-        </p>
+    <div className="account-form">
+      <div className="weather-toggle">
+        <button
+          type="button"
+          className={`toggle-chip ${mode === "login" ? "is-active" : ""}`}
+          onClick={() => onModeChange("login")}
+        >
+          Log in
+        </button>
+        <button
+          type="button"
+          className={`toggle-chip ${mode === "register" ? "is-active" : ""}`}
+          onClick={() => onModeChange("register")}
+        >
+          Create account
+        </button>
       </div>
 
-      {user ? (
-        <div className="signed-in-card premium-signed-in">
-          <div className="auth-status-top">
-            <div>
-              <p className="card-kicker">◌ Account ready</p>
-              <h3>Saved looks are connected.</h3>
-            </div>
-            <span className="account-seal" aria-hidden="true">
-              ✦
-            </span>
-          </div>
-          <button type="button" className="ghost-button" onClick={onLogout}>
-            ↘ Log out
-          </button>
-        </div>
-      ) : (
-        <div className="auth-card premium-auth-card">
-          <div className="auth-segmented">
-            <button
-              type="button"
-              className={`segment-button ${mode === "login" ? "is-active" : ""}`}
-              onClick={() => onModeChange("login")}
-            >
-              ⌁ Log in
-            </button>
-            <button
-              type="button"
-              className={`segment-button ${mode === "register" ? "is-active" : ""}`}
-              onClick={() => onModeChange("register")}
-            >
-              ✦ Create account
-            </button>
-          </div>
+      <div className="manual-grid compact-grid">
+        <label className="field">
+          <span>Email</span>
+          <input value={email} onChange={(event) => onEmailChange(event.target.value)} />
+        </label>
+        <label className="field">
+          <span>Password</span>
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => onPasswordChange(event.target.value)}
+          />
+        </label>
+      </div>
 
-          <div className="manual-grid">
-            <label className="input-field">
-              <span>@ Email</span>
-              <input value={email} onChange={(event) => onEmailChange(event.target.value)} />
-            </label>
-            <label className="input-field">
-              <span>• Password</span>
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => onPasswordChange(event.target.value)}
-              />
-            </label>
-          </div>
+      <button type="button" className="primary-button" disabled={isSubmitting} onClick={onSubmit}>
+        {isSubmitting ? "Loading..." : mode === "login" ? "Log in" : "Create account"}
+      </button>
 
-          <button type="button" className="primary-button" disabled={isSubmitting} onClick={onSubmit}>
-            {isSubmitting ? "Working..." : mode === "login" ? "Log in" : "Create account"}
-          </button>
-
-          {authMessage ? <p className="inline-message premium-message">{authMessage}</p> : null}
-        </div>
-      )}
-    </section>
+      {authMessage ? <p className="helper-text">{authMessage}</p> : null}
+    </div>
   );
 }

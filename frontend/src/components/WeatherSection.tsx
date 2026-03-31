@@ -1,101 +1,80 @@
 import { conditions } from "../lib/constants";
-import type { Condition } from "../lib/types";
+import type { Condition, WeatherMode } from "../lib/types";
 
 type WeatherSectionProps = {
+  mode: WeatherMode;
   manualTemperature: number;
   manualCondition: Condition;
   isLoading: boolean;
-  locationMessage: string;
+  onModeChange: (mode: WeatherMode) => void;
   onTemperatureChange: (value: number) => void;
   onConditionChange: (condition: Condition) => void;
-  onUseLocation: () => void;
-  onSubmitManual: () => void;
+  onSubmit: () => void;
 };
 
 export function WeatherSection({
+  mode,
   manualTemperature,
   manualCondition,
   isLoading,
-  locationMessage,
+  onModeChange,
   onTemperatureChange,
   onConditionChange,
-  onUseLocation,
-  onSubmitManual
+  onSubmit
 }: WeatherSectionProps) {
   return (
-    <section className="panel section-panel">
+    <section className="section">
       <div className="section-heading">
-        <h2>Add the weather.</h2>
-        <p>Use your location or enter it yourself.</p>
+        <h2>Weather</h2>
       </div>
 
-      <div className="weather-layout">
-        <article className="weather-card weather-card-geo">
-          <div className="weather-card-head">
-            <span className="panel-pill">⌖ Live weather</span>
-            <h3>My location</h3>
-          </div>
-          <div className="weather-hero-mark" aria-hidden="true">
-            <span className="weather-hero-icon">📍</span>
-          </div>
-          <p>{locationMessage}</p>
-          <div className="weather-card-footer">
-            <button
-              type="button"
-              className="primary-button"
-              disabled={isLoading}
-              onClick={onUseLocation}
+      <div className="weather-toggle" role="tablist" aria-label="Weather mode">
+        <button
+          type="button"
+          className={`toggle-chip ${mode === "geo" ? "is-active" : ""}`}
+          onClick={() => onModeChange("geo")}
+        >
+          📍 Use my location
+        </button>
+        <button
+          type="button"
+          className={`toggle-chip ${mode === "manual" ? "is-active" : ""}`}
+          onClick={() => onModeChange("manual")}
+        >
+          ☁ Manual
+        </button>
+      </div>
+
+      {mode === "manual" ? (
+        <div className="manual-grid">
+          <label className="field">
+            <span>Temperature</span>
+            <input
+              type="number"
+              value={manualTemperature}
+              onChange={(event) => onTemperatureChange(Number(event.target.value))}
+            />
+          </label>
+
+          <label className="field">
+            <span>Condition</span>
+            <select
+              value={manualCondition}
+              onChange={(event) => onConditionChange(event.target.value as Condition)}
             >
-              {isLoading ? "Checking local weather..." : "Get local weather"}
-            </button>
-          </div>
-        </article>
-
-        <article className="weather-card weather-card-manual">
-          <div className="weather-card-head">
-            <span className="panel-pill">✦ Manual control</span>
-            <h3>Manual</h3>
-          </div>
-          <div className="weather-hero-mark" aria-hidden="true">
-            <span className="weather-hero-icon">📝</span>
-          </div>
-
-          <div className="manual-grid">
-            <label className="input-field">
-              <span>🌡 Temperature</span>
-              <input
-                type="number"
-                value={manualTemperature}
-                onChange={(event) => onTemperatureChange(Number(event.target.value))}
-              />
-            </label>
-
-            <label className="input-field">
-              <span>☁ Condition</span>
-              <select
-                value={manualCondition}
-                onChange={(event) => onConditionChange(event.target.value as Condition)}
-              >
-                {conditions.map((condition) => (
-                  <option key={condition.value} value={condition.value}>
-                    {condition.label}
-                  </option>
+              {conditions.map((condition) => (
+                <option key={condition.value} value={condition.value}>
+                  {condition.label}
+                </option>
               ))}
-              </select>
-            </label>
-          </div>
-          <div className="weather-card-footer">
-            <button
-              type="button"
-              className="primary-button secondary"
-              disabled={isLoading}
-              onClick={onSubmitManual}
-            >
-              {isLoading ? "Finding curated looks..." : "Show outfit ideas"}
-            </button>
-          </div>
-        </article>
-      </div>
+            </select>
+          </label>
+        </div>
+      ) : null}
+
+      <button type="button" className="primary-button" disabled={isLoading} onClick={onSubmit}>
+        {isLoading ? "Loading..." : "Show outfits"}
+      </button>
     </section>
   );
 }

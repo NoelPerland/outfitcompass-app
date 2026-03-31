@@ -73,9 +73,6 @@ export default function App() {
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [authMessage, setAuthMessage] = useState("");
   const [feedback, setFeedback] = useState("");
-  const [locationMessage, setLocationMessage] = useState(
-    "We'll use your current location when you want the quickest route."
-  );
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const [saveBusy, setSaveBusy] = useState<Record<string, boolean>>({});
@@ -123,14 +120,13 @@ export default function App() {
     setSavedOutfits(saved.savedOutfits);
   }
 
-  async function handleFetchOutfits(modeOverride?: WeatherMode) {
+  async function handleFetchOutfits() {
     setIsLoading(true);
     setFeedback("");
-    const activeMode = modeOverride ?? weatherMode;
 
     try {
       const response =
-        activeMode === "manual"
+        weatherMode === "manual"
           ? await getRecommendations({
               mood: selectedMood,
               weather: {
@@ -140,7 +136,6 @@ export default function App() {
               }
             })
           : await (async () => {
-              setLocationMessage("Checking your local weather now...");
               const position = await getCurrentPosition();
               return getRecommendations({
                 mood: selectedMood,
@@ -154,20 +149,10 @@ export default function App() {
 
       setSuggestions(response.suggestions);
       setWeatherSummary(response.weatherSummary);
-
-      if (activeMode === "geo") {
-        setLocationMessage("Local weather found. You can still switch to manual entry anytime.");
-      }
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "We could not fetch outfit suggestions right now.";
-      setFeedback(message);
-
-      if (activeMode === "geo") {
-        setLocationMessage(
-          "Location did not work smoothly this time. Manual weather entry is ready below."
-        );
-      }
+      setFeedback(
+        error instanceof Error ? error.message : "We could not fetch outfit suggestions right now."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -183,11 +168,7 @@ export default function App() {
       setUser(response.user);
       setEmail("");
       setPassword("");
-      setAuthMessage(
-        authMode === "login"
-          ? "You're logged in and ready to save outfits."
-          : "Your account is ready. Save any look you like."
-      );
+      setAuthMessage(authMode === "login" ? "Logged in." : "Account created.");
       const saved = await getSavedOutfits();
       setSavedOutfits(saved.savedOutfits);
     } catch (error) {
@@ -201,7 +182,7 @@ export default function App() {
     await logout();
     setUser(null);
     setSavedOutfits([]);
-    setAuthMessage("You've been logged out.");
+    setAuthMessage("");
   }
 
   async function handleSaveSuggestion(suggestion: Suggestion) {
@@ -211,7 +192,6 @@ export default function App() {
     try {
       await saveOutfit(suggestion.savePayload);
       await refreshSavedOutfits();
-      setFeedback("Saved. That outfit will be waiting for you later.");
     } catch (error) {
       setFeedback(
         error instanceof Error ? error.message : "We could not save that outfit right now."
@@ -225,7 +205,6 @@ export default function App() {
     try {
       await deleteSavedOutfit(id);
       await refreshSavedOutfits();
-      setFeedback("Removed. Your saved list is up to date.");
     } catch (error) {
       setFeedback(
         error instanceof Error ? error.message : "We could not remove that saved outfit."
@@ -235,80 +214,14 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <section className="hero hero-premium">
+      <header className="hero">
         <div className="hero-copy">
-          <h1>Pick a mood. Check the weather. Get the look.</h1>
+          <h1>Pick a mood. Get an outfit.</h1>
+          <p>Simple outfit ideas based on mood and weather.</p>
+          <button type="button" className="primary-button hero-button" onClick={() => void handleFetchOutfits()}>
+            Get outfit
+          </button>
         </div>
-        <div className="hero-card hero-flow-card hero-highlight-card">
-          <h2 className="flow-title">Simple outfit picks for right now.</h2>
-          <div className="hero-stat-row">
-            <div className="hero-stat-card">
-              <span className="hero-stat-icon" aria-hidden="true">
-                👗
-              </span>
-              <strong>3-5</strong>
-              <span>Looks</span>
-            </div>
-            <div className="hero-stat-card">
-              <span className="hero-stat-icon" aria-hidden="true">
-                😊
-              </span>
-              <strong>6</strong>
-              <span>Moods</span>
-            </div>
-            <div className="hero-stat-card">
-              <span className="hero-stat-icon" aria-hidden="true">
-                ☁
-              </span>
-              <strong>5</strong>
-              <span>Weather</span>
-            </div>
-          </div>
-          <div className="hero-mini-runway" aria-hidden="true">
-            <span className="runway-orb runway-orb-a" />
-            <span className="runway-orb runway-orb-b" />
-            <span className="runway-line" />
-          </div>
-        </div>
-      </section>
-
-      {feedback ? (
-        <div className="banner banner-feedback" role="status" aria-live="polite">
-          <span className="banner-dot" aria-hidden="true" />
-          <span>{feedback}</span>
-        </div>
-      ) : null}
-
-      <MoodPicker selectedMood={selectedMood} onSelect={(mood) => setSelectedMood(mood)} />
-
-      <WeatherSection
-        manualTemperature={manualTemperature}
-        manualCondition={manualCondition}
-        isLoading={isLoading}
-        locationMessage={locationMessage}
-        onTemperatureChange={setManualTemperature}
-        onConditionChange={setManualCondition}
-        onUseLocation={() => {
-          setWeatherMode("geo");
-          void handleFetchOutfits("geo");
-        }}
-        onSubmitManual={() => {
-          setWeatherMode("manual");
-          void handleFetchOutfits("manual");
-        }}
-      />
-
-      <SuggestionResults
-        suggestions={suggestions}
-        weatherSummary={weatherSummary}
-        isLoading={isLoading}
-        onSave={(suggestion) => void handleSaveSuggestion(suggestion)}
-        saveBusy={saveBusy}
-        savedTemplateIds={savedTemplateIds}
-        canSave={Boolean(user)}
-      />
-
-      <div className="split-layout">
         <AuthPanel
           user={user}
           email={email}
@@ -322,12 +235,41 @@ export default function App() {
           onSubmit={() => void handleAuthSubmit()}
           onLogout={() => void handleLogout()}
         />
+      </header>
 
-        <SavedOutfitsPanel
-          savedOutfits={savedOutfits}
-          onDelete={(id) => void handleDeleteSavedOutfit(id)}
-        />
-      </div>
+      {feedback ? (
+        <div className="feedback" role="status" aria-live="polite">
+          {feedback}
+        </div>
+      ) : null}
+
+      <MoodPicker selectedMood={selectedMood} onSelect={setSelectedMood} />
+
+      <WeatherSection
+        mode={weatherMode}
+        manualTemperature={manualTemperature}
+        manualCondition={manualCondition}
+        isLoading={isLoading}
+        onModeChange={setWeatherMode}
+        onTemperatureChange={setManualTemperature}
+        onConditionChange={setManualCondition}
+        onSubmit={() => void handleFetchOutfits()}
+      />
+
+      <SuggestionResults
+        suggestions={suggestions}
+        weatherSummary={weatherSummary}
+        isLoading={isLoading}
+        onSave={(suggestion) => void handleSaveSuggestion(suggestion)}
+        saveBusy={saveBusy}
+        savedTemplateIds={savedTemplateIds}
+        canSave={Boolean(user)}
+      />
+
+      <SavedOutfitsPanel
+        savedOutfits={savedOutfits}
+        onDelete={(id) => void handleDeleteSavedOutfit(id)}
+      />
     </main>
   );
 }
