@@ -49,8 +49,12 @@ function getCurrentPosition() {
 
 export default function App() {
   const [selectedMood, setSelectedMood] = useState<Mood>(() => readLocalStorage("mood", "happy"));
-  const [weatherMode, setWeatherMode] = useState<WeatherMode>(() => readLocalStorage("weatherMode", "geo"));
-  const [manualTemperature, setManualTemperature] = useState(() => readLocalStorage("temperature", 16));
+  const [weatherMode, setWeatherMode] = useState<WeatherMode>(() =>
+    readLocalStorage("weatherMode", "geo")
+  );
+  const [manualTemperature, setManualTemperature] = useState(() =>
+    readLocalStorage("temperature", 16)
+  );
   const [manualCondition, setManualCondition] = useState<Condition>(() =>
     readLocalStorage("condition", conditions[0].value)
   );
@@ -70,7 +74,7 @@ export default function App() {
   const [authMessage, setAuthMessage] = useState("");
   const [feedback, setFeedback] = useState("");
   const [locationMessage, setLocationMessage] = useState(
-    "We’ll use your current location when you want the quickest route."
+    "We'll use your current location when you want the quickest route."
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
@@ -109,17 +113,19 @@ export default function App() {
     if (!user) {
       return;
     }
+
     const saved = await getSavedOutfits();
     setSavedOutfits(saved.savedOutfits);
   }
 
-  async function handleFetchOutfits() {
+  async function handleFetchOutfits(modeOverride?: WeatherMode) {
     setIsLoading(true);
     setFeedback("");
+    const activeMode = modeOverride ?? weatherMode;
 
     try {
       const response =
-        weatherMode === "manual"
+        activeMode === "manual"
           ? await getRecommendations({
               mood: selectedMood,
               weather: {
@@ -143,16 +149,19 @@ export default function App() {
 
       setSuggestions(response.suggestions);
       setWeatherSummary(response.weatherSummary);
-      setFeedback("Here are a few outfit ideas that should work nicely today.");
-      if (weatherMode === "geo") {
+
+      if (activeMode === "geo") {
         setLocationMessage("Local weather found. You can still switch to manual entry anytime.");
       }
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "We could not fetch outfit suggestions right now.";
       setFeedback(message);
-      if (weatherMode === "geo") {
-        setLocationMessage("Location did not work smoothly this time. Manual weather entry is ready below.");
+
+      if (activeMode === "geo") {
+        setLocationMessage(
+          "Location did not work smoothly this time. Manual weather entry is ready below."
+        );
       }
     } finally {
       setIsLoading(false);
@@ -171,7 +180,7 @@ export default function App() {
       setPassword("");
       setAuthMessage(
         authMode === "login"
-          ? "You’re logged in and ready to save outfits."
+          ? "You're logged in and ready to save outfits."
           : "Your account is ready. Save any look you like."
       );
       const saved = await getSavedOutfits();
@@ -187,7 +196,7 @@ export default function App() {
     await logout();
     setUser(null);
     setSavedOutfits([]);
-    setAuthMessage("You’ve been logged out.");
+    setAuthMessage("You've been logged out.");
   }
 
   async function handleSaveSuggestion(suggestion: Suggestion) {
@@ -199,7 +208,9 @@ export default function App() {
       await refreshSavedOutfits();
       setFeedback("Saved. That outfit will be waiting for you later.");
     } catch (error) {
-      setFeedback(error instanceof Error ? error.message : "We could not save that outfit right now.");
+      setFeedback(
+        error instanceof Error ? error.message : "We could not save that outfit right now."
+      );
     } finally {
       setSaveBusy((current) => ({ ...current, [suggestion.id]: false }));
     }
@@ -211,7 +222,9 @@ export default function App() {
       await refreshSavedOutfits();
       setFeedback("Removed. Your saved list is up to date.");
     } catch (error) {
-      setFeedback(error instanceof Error ? error.message : "We could not remove that saved outfit.");
+      setFeedback(
+        error instanceof Error ? error.message : "We could not remove that saved outfit."
+      );
     }
   }
 
@@ -222,17 +235,13 @@ export default function App() {
           <p className="eyebrow">Outfit Compass</p>
           <h1>Find an outfit that suits your mood and the weather in one calm step.</h1>
           <p>
-            Warm, practical suggestions for right now, whether you’re dressing for drizzle, sun,
-            or a chilly commute.
+            Warm, practical suggestions for right now, whether you're dressing for drizzle, sun, or
+            a chilly commute.
           </p>
         </div>
-        <div className="hero-card">
-          <p className="hero-kicker">Today’s flow</p>
-          <ol>
-            <li>Pick your mood.</li>
-            <li>Add the weather or use your location.</li>
-            <li>Save the looks that feel worth repeating.</li>
-          </ol>
+        <div className="hero-card hero-flow-card">
+          <p className="eyebrow">Today's flow</p>
+          <h2 className="flow-title">Pick a mood, check the weather, save your favorite looks.</h2>
         </div>
       </section>
 
@@ -245,15 +254,20 @@ export default function App() {
       <MoodPicker selectedMood={selectedMood} onSelect={(mood) => setSelectedMood(mood)} />
 
       <WeatherSection
-        weatherMode={weatherMode}
         manualTemperature={manualTemperature}
         manualCondition={manualCondition}
         isLoading={isLoading}
         locationMessage={locationMessage}
-        onModeChange={setWeatherMode}
         onTemperatureChange={setManualTemperature}
         onConditionChange={setManualCondition}
-        onSubmit={() => void handleFetchOutfits()}
+        onUseLocation={() => {
+          setWeatherMode("geo");
+          void handleFetchOutfits("geo");
+        }}
+        onSubmitManual={() => {
+          setWeatherMode("manual");
+          void handleFetchOutfits("manual");
+        }}
       />
 
       <SuggestionResults
