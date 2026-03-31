@@ -23,35 +23,55 @@ export function WeatherSection({
   onSubmitManual
 }: WeatherSectionProps) {
   return (
-    <section className="panel">
+    <section className="panel section-panel">
       <div className="section-heading">
-        <p className="eyebrow">Weather</p>
-        <h2>Let&apos;s pair that mood with the weather.</h2>
-        <p>Use your location for a quick read, or enter the weather manually.</p>
+        <h2>Add the weather.</h2>
+        <p>Use your location or enter it yourself.</p>
       </div>
 
       <div className="weather-layout">
-        <div className="weather-card">
-          <h3>Use my location</h3>
+        <article className="weather-card weather-card-geo">
+          <div className="weather-card-head">
+            <span className="panel-pill">⌖ Live weather</span>
+            <h3>My location</h3>
+          </div>
+          <div className="weather-hero-mark" aria-hidden="true">
+            <span className="weather-hero-icon">📍</span>
+          </div>
           <p>{locationMessage}</p>
-          <button type="button" className="primary-button" disabled={isLoading} onClick={onUseLocation}>
-            {isLoading ? "Checking local weather..." : "Use local weather"}
-          </button>
-        </div>
+          <div className="weather-card-footer">
+            <button
+              type="button"
+              className="primary-button"
+              disabled={isLoading}
+              onClick={onUseLocation}
+            >
+              {isLoading ? "Checking local weather..." : "Get local weather"}
+            </button>
+          </div>
+        </article>
 
-        <div className="weather-card">
-          <h3>Enter it manually</h3>
+        <article className="weather-card weather-card-manual">
+          <div className="weather-card-head">
+            <span className="panel-pill">✦ Manual control</span>
+            <h3>Manual</h3>
+          </div>
+          <div className="weather-hero-mark" aria-hidden="true">
+            <span className="weather-hero-icon">📝</span>
+          </div>
+
           <div className="manual-grid">
-            <label>
-              <span>Temperature (&deg;C)</span>
+            <label className="input-field">
+              <span>🌡 Temperature</span>
               <input
                 type="number"
                 value={manualTemperature}
                 onChange={(event) => onTemperatureChange(Number(event.target.value))}
               />
             </label>
-            <label>
-              <span>Condition</span>
+
+            <label className="input-field">
+              <span>☁ Condition</span>
               <select
                 value={manualCondition}
                 onChange={(event) => onConditionChange(event.target.value as Condition)}
@@ -60,19 +80,21 @@ export function WeatherSection({
                   <option key={condition.value} value={condition.value}>
                     {condition.label}
                   </option>
-                ))}
+              ))}
               </select>
             </label>
           </div>
-          <button
-            type="button"
-            className="primary-button secondary"
-            disabled={isLoading}
-            onClick={onSubmitManual}
-          >
-            {isLoading ? "Finding looks..." : "Show outfit ideas"}
-          </button>
-        </div>
+          <div className="weather-card-footer">
+            <button
+              type="button"
+              className="primary-button secondary"
+              disabled={isLoading}
+              onClick={onSubmitManual}
+            >
+              {isLoading ? "Finding curated looks..." : "Show outfit ideas"}
+            </button>
+          </div>
+        </article>
       </div>
     </section>
   );

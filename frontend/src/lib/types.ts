@@ -46,6 +46,7 @@ export type AuthUser = {
 
 export type SavedOutfit = {
   id: string;
+  outfitTemplateId?: string | null;
   mood: Mood;
   resolvedCondition: Condition;
   resolvedTempBand: string;

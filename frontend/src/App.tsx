@@ -79,6 +79,11 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const [saveBusy, setSaveBusy] = useState<Record<string, boolean>>({});
+  const savedTemplateIds = new Set(
+    savedOutfits
+      .map((saved) => saved.outfitTemplateId)
+      .filter((value): value is string => Boolean(value))
+  );
 
   useEffect(() => {
     window.localStorage.setItem("mood", JSON.stringify(selectedMood));
@@ -230,24 +235,47 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <section className="hero">
+      <section className="hero hero-premium">
         <div className="hero-copy">
-          <p className="eyebrow">Outfit Compass</p>
-          <h1>Find an outfit that suits your mood and the weather in one calm step.</h1>
-          <p>
-            Warm, practical suggestions for right now, whether you're dressing for drizzle, sun, or
-            a chilly commute.
-          </p>
+          <h1>Pick a mood. Check the weather. Get the look.</h1>
         </div>
-        <div className="hero-card hero-flow-card">
-          <p className="eyebrow">Today's flow</p>
-          <h2 className="flow-title">Pick a mood, check the weather, save your favorite looks.</h2>
+        <div className="hero-card hero-flow-card hero-highlight-card">
+          <h2 className="flow-title">Simple outfit picks for right now.</h2>
+          <div className="hero-stat-row">
+            <div className="hero-stat-card">
+              <span className="hero-stat-icon" aria-hidden="true">
+                👗
+              </span>
+              <strong>3-5</strong>
+              <span>Looks</span>
+            </div>
+            <div className="hero-stat-card">
+              <span className="hero-stat-icon" aria-hidden="true">
+                😊
+              </span>
+              <strong>6</strong>
+              <span>Moods</span>
+            </div>
+            <div className="hero-stat-card">
+              <span className="hero-stat-icon" aria-hidden="true">
+                ☁
+              </span>
+              <strong>5</strong>
+              <span>Weather</span>
+            </div>
+          </div>
+          <div className="hero-mini-runway" aria-hidden="true">
+            <span className="runway-orb runway-orb-a" />
+            <span className="runway-orb runway-orb-b" />
+            <span className="runway-line" />
+          </div>
         </div>
       </section>
 
       {feedback ? (
-        <div className="banner" role="status" aria-live="polite">
-          {feedback}
+        <div className="banner banner-feedback" role="status" aria-live="polite">
+          <span className="banner-dot" aria-hidden="true" />
+          <span>{feedback}</span>
         </div>
       ) : null}
 
@@ -273,8 +301,10 @@ export default function App() {
       <SuggestionResults
         suggestions={suggestions}
         weatherSummary={weatherSummary}
+        isLoading={isLoading}
         onSave={(suggestion) => void handleSaveSuggestion(suggestion)}
         saveBusy={saveBusy}
+        savedTemplateIds={savedTemplateIds}
         canSave={Boolean(user)}
       />
 

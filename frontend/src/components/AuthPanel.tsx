@@ -28,49 +28,55 @@ export function AuthPanel({
   onLogout
 }: AuthPanelProps) {
   return (
-    <section className="panel">
+    <section className="panel section-panel">
       <div className="section-heading">
-        <p className="eyebrow">Saved outfits</p>
-        <h2>{user ? "Your account is ready to save looks." : "Save the outfits you want to revisit."}</h2>
+        <h2>{user ? "You are signed in." : "Save your outfits."}</h2>
         <p>
-          {user
-            ? `Signed in as ${user.email}.`
-            : "Create a quick account so your favorite outfit ideas stay with you."}
+          {user ? user.email : "Log in or create an account."}
         </p>
       </div>
 
       {user ? (
-        <div className="signed-in-card">
-          <p>Nice. You can save any suggestion and come back to it later.</p>
+        <div className="signed-in-card premium-signed-in">
+          <div className="auth-status-top">
+            <div>
+              <p className="card-kicker">◌ Account ready</p>
+              <h3>Saved looks are connected.</h3>
+            </div>
+            <span className="account-seal" aria-hidden="true">
+              ✦
+            </span>
+          </div>
           <button type="button" className="ghost-button" onClick={onLogout}>
-            Log out
+            ↘ Log out
           </button>
         </div>
       ) : (
-        <div className="auth-card">
-          <div className="mode-toggle">
+        <div className="auth-card premium-auth-card">
+          <div className="auth-segmented">
             <button
               type="button"
-              className={`mode-pill ${mode === "login" ? "is-active" : ""}`}
+              className={`segment-button ${mode === "login" ? "is-active" : ""}`}
               onClick={() => onModeChange("login")}
             >
-              Log in
+              ⌁ Log in
             </button>
             <button
               type="button"
-              className={`mode-pill ${mode === "register" ? "is-active" : ""}`}
+              className={`segment-button ${mode === "register" ? "is-active" : ""}`}
               onClick={() => onModeChange("register")}
             >
-              Create account
+              ✦ Create account
             </button>
           </div>
+
           <div className="manual-grid">
-            <label>
-              <span>Email</span>
+            <label className="input-field">
+              <span>@ Email</span>
               <input value={email} onChange={(event) => onEmailChange(event.target.value)} />
             </label>
-            <label>
-              <span>Password</span>
+            <label className="input-field">
+              <span>• Password</span>
               <input
                 type="password"
                 value={password}
@@ -78,10 +84,12 @@ export function AuthPanel({
               />
             </label>
           </div>
+
           <button type="button" className="primary-button" disabled={isSubmitting} onClick={onSubmit}>
             {isSubmitting ? "Working..." : mode === "login" ? "Log in" : "Create account"}
           </button>
-          {authMessage ? <p className="inline-message">{authMessage}</p> : null}
+
+          {authMessage ? <p className="inline-message premium-message">{authMessage}</p> : null}
         </div>
       )}
     </section>
