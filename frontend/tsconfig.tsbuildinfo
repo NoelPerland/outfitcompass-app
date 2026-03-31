@@ -1,1 +1,0 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/components/authpanel.tsx","./src/components/moodpicker.tsx","./src/components/savedoutfitspanel.tsx","./src/components/suggestionresults.tsx","./src/components/weathersection.tsx","./src/lib/api.ts","./src/lib/constants.ts","./src/lib/types.ts","./vite.config.ts","./tests/app.spec.ts","./playwright.config.ts"],"version":"5.9.3"}
