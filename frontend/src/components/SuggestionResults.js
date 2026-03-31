@@ -1,0 +1,10 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+export function SuggestionResults({ suggestions, weatherSummary, onSave, saveBusy, canSave }) {
+    return (_jsxs("section", { className: "panel", children: [_jsxs("div", { className: "section-heading", children: [_jsx("p", { className: "eyebrow", children: "Results" }), _jsx("h2", { children: "Here are a few looks that should feel right today." }), _jsx("p", { children: weatherSummary
+                            ? `Built around ${weatherSummary.summary}.`
+                            : "Run a weather check to see 3 to 5 practical outfit ideas." })] }), suggestions.length === 0 ? (_jsx("div", { className: "empty-state", role: "status", "aria-live": "polite", children: "Pick your mood, add the weather, and we\u2019ll pull together a few easy options." })) : (_jsx("div", { className: "suggestions-grid", role: "status", "aria-live": "polite", children: suggestions.map((suggestion) => (_jsxs("article", { className: "suggestion-card", children: [_jsxs("div", { className: "suggestion-top", children: [_jsxs("div", { children: [_jsx("h3", { children: suggestion.title }), _jsx("p", { children: suggestion.practicalNote })] }), _jsx("div", { className: "palette-row", "aria-label": "Recommended color palette", children: suggestion.paletteColors.map((color) => (_jsx("span", { className: "color-chip", children: color }, `${suggestion.id}-${color}`))) })] }), _jsx("ul", { className: "item-list", children: suggestion.items.map((item) => (_jsxs("li", { children: [_jsx("span", { className: "item-name", children: item.name }), _jsxs("span", { className: "item-meta", children: [item.category, " in ", item.color] })] }, `${suggestion.id}-${item.category}-${item.name}`))) }), _jsx("button", { type: "button", className: "ghost-button", disabled: !canSave || saveBusy[suggestion.id], onClick: () => onSave(suggestion), children: canSave
+                                ? saveBusy[suggestion.id]
+                                    ? "Saving..."
+                                    : "Save this outfit"
+                                : "Log in to save this outfit" })] }, suggestion.id))) }))] }));
+}

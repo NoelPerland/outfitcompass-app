@@ -1,0 +1,40 @@
+{
+  "moods": [
+    "happy",
+    "casual",
+    "professional",
+    "sporty",
+    "cozy",
+    "confident"
+  ],
+  "conditions": [
+    "sunny",
+    "cloudy",
+    "rain",
+    "snow",
+    "wind"
+  ],
+  "temperatureBands": [
+    "freezing",
+    "cold",
+    "mild",
+    "warm",
+    "hot"
+  ],
+  "colorPalettes": {
+    "happy": ["marigold", "sky blue", "cream"],
+    "casual": ["denim", "olive", "stone"],
+    "professional": ["navy", "charcoal", "white"],
+    "sporty": ["cobalt", "graphite", "mint"],
+    "cozy": ["camel", "plum", "oatmeal"],
+    "confident": ["black", "ruby", "sand"]
+  },
+  "categories": ["top", "bottom", "layer", "outerwear", "footwear", "accessory"],
+  "conditionNotes": {
+    "sunny": "Easy to wear outdoors when the sun is out.",
+    "cloudy": "Balanced for an overcast day without feeling dull.",
+    "rain": "Practical for drizzle or steady rain.",
+    "snow": "Built to stay comfortable through wintry weather.",
+    "wind": "Layered to handle breezy conditions."
+  }
+}
