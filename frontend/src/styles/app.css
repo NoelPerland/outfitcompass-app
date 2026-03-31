@@ -441,6 +441,105 @@ select:focus {
   width: 90%;
 }
 
+@media (max-width: 520px) {
+  .app-shell {
+    width: min(100% - 0.9rem, 720px);
+    padding-top: 1rem;
+    padding-bottom: 2.4rem;
+  }
+
+  .hero,
+  .section,
+  .results-list,
+  .mood-grid,
+  .manual-grid,
+  .weather-toggle,
+  .account-bar,
+  .account-form {
+    gap: 0.75rem;
+  }
+
+  .hero {
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-copy h1 {
+    max-width: none;
+    font-size: 2.05rem;
+    line-height: 1;
+  }
+
+  .hero-copy p,
+  .section-heading p,
+  .result-note,
+  .empty-state,
+  .feedback,
+  .account-bar,
+  .helper-text {
+    font-size: 0.93rem;
+  }
+
+  .section {
+    margin-bottom: 1.5rem;
+  }
+
+  .mood-grid,
+  .weather-toggle {
+    grid-template-columns: 1fr;
+  }
+
+  .mood-chip,
+  .toggle-chip,
+  .primary-button {
+    min-height: 3.15rem;
+    padding: 0.85rem 0.95rem;
+  }
+
+  .mood-chip {
+    justify-content: flex-start;
+    padding-right: 2.8rem;
+  }
+
+  .mood-check {
+    right: 0.7rem;
+  }
+
+  .result-card {
+    gap: 0.75rem;
+    padding: 0.9rem;
+    border-radius: 20px;
+  }
+
+  .result-preview,
+  .result-top {
+    gap: 0.7rem;
+  }
+
+  .result-preview {
+    padding: 0.65rem 0.7rem;
+  }
+
+  .preview-icon {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+
+  .icon-button {
+    width: 2.35rem;
+    height: 2.35rem;
+    flex: 0 0 auto;
+  }
+
+  .simple-list {
+    gap: 0.48rem;
+  }
+
+  .simple-list li {
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+}
+
 @media (min-width: 640px) {
   .app-shell {
     width: min(100% - 2rem, 760px);
