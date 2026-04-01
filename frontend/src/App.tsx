@@ -76,6 +76,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const [saveBusy, setSaveBusy] = useState<Record<string, boolean>>({});
+  const [refreshBusy, setRefreshBusy] = useState<Record<string, boolean>>({});
   const savedTemplateIds = new Set(
     savedOutfits
       .map((saved) => saved.outfitTemplateId)
@@ -111,6 +112,29 @@ export default function App() {
     })();
   }, []);
 
+  async function requestRecommendations() {
+    return weatherMode === "manual"
+      ? getRecommendations({
+          mood: selectedMood,
+          weather: {
+            source: "manual",
+            temperatureC: manualTemperature,
+            condition: manualCondition
+          }
+        })
+      : (async () => {
+          const position = await getCurrentPosition();
+          return getRecommendations({
+            mood: selectedMood,
+            weather: {
+              source: "geo",
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            }
+          });
+        })();
+  }
+
   async function refreshSavedOutfits() {
     if (!user) {
       return;
@@ -125,28 +149,7 @@ export default function App() {
     setFeedback("");
 
     try {
-      const response =
-        weatherMode === "manual"
-          ? await getRecommendations({
-              mood: selectedMood,
-              weather: {
-                source: "manual",
-                temperatureC: manualTemperature,
-                condition: manualCondition
-              }
-            })
-          : await (async () => {
-              const position = await getCurrentPosition();
-              return getRecommendations({
-                mood: selectedMood,
-                weather: {
-                  source: "geo",
-                  latitude: position.coords.latitude,
-                  longitude: position.coords.longitude
-                }
-              });
-            })();
-
+      const response = await requestRecommendations();
       setSuggestions(response.suggestions);
       setWeatherSummary(response.weatherSummary);
     } catch (error) {
@@ -155,6 +158,36 @@ export default function App() {
       );
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handleRefreshSuggestion(targetId: string) {
+    setRefreshBusy((current) => ({ ...current, [targetId]: true }));
+    setFeedback("");
+
+    try {
+      const response = await requestRecommendations();
+      setWeatherSummary(response.weatherSummary);
+
+      setSuggestions((current) => {
+        const otherTemplateIds = new Set(
+          current.filter((item) => item.id !== targetId).map((item) => item.templateId)
+        );
+        const replacement =
+          response.suggestions.find((item) => !otherTemplateIds.has(item.templateId)) ??
+          response.suggestions.find((item) => item.id !== targetId) ??
+          response.suggestions[0];
+
+        if (!replacement) {
+          return current;
+        }
+
+        return current.map((item) => (item.id === targetId ? replacement : item));
+      });
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : "We could not refresh that outfit.");
+    } finally {
+      setRefreshBusy((current) => ({ ...current, [targetId]: false }));
     }
   }
 
@@ -216,9 +249,8 @@ export default function App() {
     <main className="app-shell">
       <header className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">Outfit Compass</span>
-          <h1>Pick a mood. Get an outfit.</h1>
-          <p>Simple outfit ideas based on mood and weather.</p>
+          <h1>✨ Outfit Compass</h1>
+          <p>Pick a mood, add the weather, and get a look that fits.</p>
         </div>
         <AuthPanel
           user={user}
@@ -259,7 +291,9 @@ export default function App() {
         weatherSummary={weatherSummary}
         isLoading={isLoading}
         onSave={(suggestion) => void handleSaveSuggestion(suggestion)}
+        onRefresh={(suggestionId) => void handleRefreshSuggestion(suggestionId)}
         saveBusy={saveBusy}
+        refreshBusy={refreshBusy}
         savedTemplateIds={savedTemplateIds}
         canSave={Boolean(user)}
       />

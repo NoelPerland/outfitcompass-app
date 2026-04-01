@@ -8,9 +8,8 @@ type MoodPickerProps = {
 
 export function MoodPicker({ selectedMood, onSelect }: MoodPickerProps) {
   return (
-    <section className="section">
+    <section className="section section-animated">
       <div className="section-heading">
-        <span className="eyebrow">Mood</span>
         <h2>Choose your mood</h2>
       </div>
 

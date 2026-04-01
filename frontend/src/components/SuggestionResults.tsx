@@ -5,7 +5,9 @@ type SuggestionResultsProps = {
   weatherSummary: WeatherSummary | null;
   isLoading: boolean;
   onSave: (suggestion: Suggestion) => void;
+  onRefresh: (suggestionId: string) => void;
   saveBusy: Record<string, boolean>;
+  refreshBusy: Record<string, boolean>;
   savedTemplateIds: Set<string>;
   canSave: boolean;
 };
@@ -49,14 +51,15 @@ export function SuggestionResults({
   weatherSummary,
   isLoading,
   onSave,
+  onRefresh,
   saveBusy,
+  refreshBusy,
   savedTemplateIds,
   canSave
 }: SuggestionResultsProps) {
   return (
-    <section className="section">
+    <section className="section section-animated">
       <div className="section-heading">
-        <span className="eyebrow">Looks</span>
         <h2>Outfits</h2>
         {weatherSummary ? <p>{weatherSummary.summary}</p> : null}
       </div>
@@ -83,14 +86,7 @@ export function SuggestionResults({
             return (
               <article className="result-card" key={suggestion.id}>
                 <div className="result-preview" aria-hidden="true">
-                  <div className="palette-dots" aria-label="Outfit colors">
-                    {suggestion.paletteColors.slice(0, 4).map((color, index) => (
-                      <span
-                        className={`palette-dot palette-dot-${(index % 4) + 1}`}
-                        key={`${suggestion.id}-${color}`}
-                      />
-                    ))}
-                  </div>
+                  <span className="preview-badge">✨ Curated look</span>
                   <div className="preview-icons">
                     {suggestion.items.slice(0, 3).map((item) => (
                       <span className="preview-icon" key={`${suggestion.id}-${item.name}`}>
@@ -102,15 +98,26 @@ export function SuggestionResults({
 
                 <div className="result-top">
                   <h3>{suggestion.title}</h3>
-                  <button
-                    type="button"
-                    className={`icon-button ${isSaved ? "is-saved" : ""}`}
-                    disabled={!canSave || isSaved || saveBusy[suggestion.id]}
-                    onClick={() => onSave(suggestion)}
-                    aria-label={isSaved ? "Saved" : canSave ? "Save outfit" : "Login to save"}
-                  >
-                    {isSaved ? "♥" : "♡"}
-                  </button>
+                  <div className="result-actions">
+                    <button
+                      type="button"
+                      className="icon-button"
+                      disabled={refreshBusy[suggestion.id]}
+                      onClick={() => onRefresh(suggestion.id)}
+                      aria-label="Refresh outfit"
+                    >
+                      {refreshBusy[suggestion.id] ? "…" : "🔄"}
+                    </button>
+                    <button
+                      type="button"
+                      className={`icon-button ${isSaved ? "is-saved" : ""}`}
+                      disabled={!canSave || isSaved || saveBusy[suggestion.id]}
+                      onClick={() => onSave(suggestion)}
+                      aria-label={isSaved ? "Saved" : canSave ? "Save outfit" : "Login to save"}
+                    >
+                      {isSaved ? "💖" : "🤍"}
+                    </button>
+                  </div>
                 </div>
 
                 <ul className="item-list simple-list">
@@ -122,7 +129,7 @@ export function SuggestionResults({
                   ))}
                 </ul>
 
-                <p className="result-note">{suggestion.practicalNote}</p>
+                <p className="result-note">💡 {suggestion.practicalNote}</p>
               </article>
             );
           })}

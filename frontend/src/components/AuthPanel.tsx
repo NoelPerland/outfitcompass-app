@@ -29,31 +29,34 @@ export function AuthPanel({
 }: AuthPanelProps) {
   if (user) {
     return (
-      <div className="account-bar">
-        <span>Signed in as {user.email}</span>
-        <button type="button" className="text-button" onClick={onLogout}>
-          Log out
+      <div className="account-card">
+        <div className="account-bar">
+          <span className="account-label">👋 Signed in</span>
+          <span className="account-email">{user.email}</span>
+        </div>
+        <button type="button" className="account-action" onClick={onLogout}>
+          ↩ Log out
         </button>
       </div>
     );
   }
 
   return (
-    <div className="account-form">
-      <div className="weather-toggle">
+    <div className="account-card account-form">
+      <div className="weather-toggle compact-toggle">
         <button
           type="button"
           className={`toggle-chip ${mode === "login" ? "is-active" : ""}`}
           onClick={() => onModeChange("login")}
         >
-          Log in
+          🔐 Log in
         </button>
         <button
           type="button"
           className={`toggle-chip ${mode === "register" ? "is-active" : ""}`}
           onClick={() => onModeChange("register")}
         >
-          Create account
+          🌷 Create account
         </button>
       </div>
 
